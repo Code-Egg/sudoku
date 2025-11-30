@@ -43,12 +43,23 @@ export const Grid: React.FC<GridProps> = ({ cells, config, selectedCellIndex, on
     return classes;
   };
 
+  const getFontSize = () => {
+    if (size === 9) return 'text-lg sm:text-2xl md:text-3xl';
+    if (size === 6) return 'text-2xl sm:text-3xl md:text-4xl';
+    return 'text-4xl sm:text-5xl';
+  };
+
+  const getMaxWidth = () => {
+    if (size === 9) return 'max-w-lg'; // Allow full width up to lg
+    if (size === 6) return 'max-w-md';
+    return 'max-w-[280px] sm:max-w-xs'; // Keep 3x3 small
+  };
+
   return (
     <div 
-      className="grid bg-slate-800 select-none shadow-xl rounded-lg overflow-hidden mx-auto"
+      className={`grid bg-slate-800 select-none shadow-xl rounded-lg overflow-hidden mx-auto w-full ${getMaxWidth()}`}
       style={{
         gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`,
-        maxWidth: size > 6 ? '100%' : `${size * 60}px` // Constrain width for smaller puzzles
       }}
     >
       {cells.map((cell) => {
@@ -61,8 +72,6 @@ export const Grid: React.FC<GridProps> = ({ cells, config, selectedCellIndex, on
         if (isSelected) bgClass = 'bg-indigo-200';
         else if (cell.value !== null && !cell.isFixed) bgClass = 'bg-indigo-50';
         
-        // Highlight logic for same numbers (optional enhancement, kept simple for now)
-
         const textClass = cell.isFixed 
           ? 'text-slate-900 font-bold' 
           : cell.isError 
@@ -75,11 +84,12 @@ export const Grid: React.FC<GridProps> = ({ cells, config, selectedCellIndex, on
             onClick={() => onCellClick(index)}
             className={`
               relative aspect-square flex items-center justify-center
-              cursor-pointer text-lg sm:text-2xl md:text-3xl
+              cursor-pointer
               transition-colors duration-75
               ${getBorderClasses(cell.row, cell.col)}
               ${bgClass}
               ${textClass}
+              ${getFontSize()}
             `}
           >
             {cell.value}
