@@ -1,0 +1,5 @@
+{
+  "name": "PokéSudoku",
+  "description": "A responsive Sudoku game with three difficulty levels (3x3, 6x6, 9x9). Complete puzzles to unlock unique AI-generated Pokémon rewards using Gemini.",
+  "requestFramePermissions": []
+}
