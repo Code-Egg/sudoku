@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Difficulty, GAME_CONFIGS, CellData, GeneratedReward } from './types';
 import { generateSudoku, checkBoard } from './services/sudoku';
 import { generateReward } from './services/geminiService';
+import { playSound } from './services/audio';
 import { Grid } from './components/Grid';
 import { Numpad } from './components/Numpad';
 import { RewardModal } from './components/RewardModal';
@@ -18,6 +19,7 @@ export default function App() {
 
   // Initialize Game
   const startNewGame = useCallback((diff: Difficulty = difficulty) => {
+    playSound.restart();
     const config = GAME_CONFIGS[diff];
     const newCells = generateSudoku(config);
     setCells(newCells);
@@ -30,9 +32,20 @@ export default function App() {
 
   // Initial load
   useEffect(() => {
-    startNewGame('4x4');
+    // Don't play sound on initial mount
+    const config = GAME_CONFIGS['4x4'];
+    const newCells = generateSudoku(config);
+    setCells(newCells);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Handle Cell Click
+  const handleCellClick = (index: number) => {
+    if (!isGameComplete) {
+      playSound.select();
+      setSelectedCellIndex(index);
+    }
+  };
 
   // Handle Input
   const handleNumberInput = async (num: number) => {
@@ -47,12 +60,14 @@ export default function App() {
     cell.value = num;
     cell.isError = false; // Reset error state on new input
     setCells(newCells);
+    playSound.input();
 
     // Check for win condition
     const config = GAME_CONFIGS[difficulty];
     const isWin = checkBoard(newCells, config);
 
     if (isWin) {
+      playSound.win();
       setIsGameComplete(true);
       setShowReward(true);
       setIsGeneratingReward(true);
@@ -69,9 +84,13 @@ export default function App() {
     const newCells = [...cells];
     const cell = newCells[selectedCellIndex];
     if (cell.isFixed) return;
-    cell.value = null;
-    cell.isError = false;
-    setCells(newCells);
+    
+    if (cell.value !== null) {
+      playSound.delete();
+      cell.value = null;
+      cell.isError = false;
+      setCells(newCells);
+    }
   };
 
   // Keyboard support
@@ -133,10 +152,7 @@ export default function App() {
           cells={cells}
           config={GAME_CONFIGS[difficulty]}
           selectedCellIndex={selectedCellIndex}
-          onCellClick={(idx) => !isGameComplete && setCells(prev => {
-             setSelectedCellIndex(idx);
-             return prev;
-          })}
+          onCellClick={handleCellClick}
         />
 
         <div className="mt-6 w-full flex justify-center">
