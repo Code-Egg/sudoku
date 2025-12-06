@@ -19,7 +19,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({ reward, isOpen, onClos
         {/* Header */}
         <div className="p-4 flex justify-between items-center border-b border-slate-100">
           <h2 className="text-xl font-bold text-indigo-600 flex items-center gap-2">
-            <span>🎉</span> Level Complete!
+            <span>🎉</span> 恭喜過關！
           </h2>
           <button 
             onClick={onClose}
@@ -34,7 +34,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({ reward, isOpen, onClos
           {isLoading ? (
             <div className="space-y-4 w-full">
               <div className="w-full aspect-square bg-slate-100 rounded-xl animate-pulse flex items-center justify-center">
-                 <span className="text-slate-400 font-medium">Summoning Pokémon...</span>
+                 <span className="text-slate-400 font-medium">正在召喚寶可夢...</span>
               </div>
               <div className="h-4 bg-slate-100 rounded w-3/4 mx-auto animate-pulse"></div>
             </div>
@@ -50,8 +50,8 @@ export const RewardModal: React.FC<RewardModalProps> = ({ reward, isOpen, onClos
               </div>
               
               <div>
-                <p className="text-lg font-bold text-slate-800">{reward.description}</p>
-                <p className="text-sm text-slate-500 mt-1">You found a new companion!</p>
+                <p className="text-xl font-bold text-slate-800">{reward.description}</p>
+                <p className="text-sm text-slate-500 mt-1">You got a new partner！</p>
               </div>
 
               <div className="flex gap-2 justify-center mt-4">
@@ -65,7 +65,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({ reward, isOpen, onClos
             </div>
           ) : (
             <div className="text-rose-500">
-              Failed to load reward.
+              Can not load!
             </div>
           )}
         </div>

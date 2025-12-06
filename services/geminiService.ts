@@ -1,24 +1,45 @@
 import { GeneratedReward } from '../types';
 
-// Replace this URL with your own base URL.
-// Ensure images are named 1.jpg, 2.jpg, etc.
-// For this demo, using PokeAPI official artwork which fits the theme perfectly.
+// Using PokeAPI official artwork
 const REWARD_IMAGE_BASE_URL = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork';
 
-// The number of images available (e.g., 151 for Gen 1 Pokemon)
-const MAX_IMAGE_ID = 151;
+// Gen 1 Pokemon
+const MAX_IMAGE_ID = 1024;
 
 export const generateReward = async (): Promise<GeneratedReward> => {
-  // Simulate a short network delay for better UX (feeling of "unlocking")
-  await new Promise(resolve => setTimeout(resolve, 600));
-
   const randomId = Math.floor(Math.random() * MAX_IMAGE_ID) + 1;
-  
-  // Construct the URL. Note: PokeAPI uses .png, change to .jpg if your server uses jpg.
   const imageUrl = `${REWARD_IMAGE_BASE_URL}/${randomId}.png`;
+  
+  let name = `Pokémon #${randomId}`;
+
+  try {
+    // Fetch Pokemon species data to get localized names
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${randomId}`);
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Try to find Traditional Chinese (zh-Hant) or Simplified Chinese (zh-Hans)
+      const chineseNameEntry = data.names.find(
+        (n: any) => n.language.name === 'zh-Hant' || n.language.name === 'zh-Hans'
+      );
+
+      if (chineseNameEntry) {
+        name = chineseNameEntry.name;
+      } else {
+        // Fallback to English name if Chinese not found
+        const enNameEntry = data.names.find((n: any) => n.language.name === 'en');
+        if (enNameEntry) {
+          name = enNameEntry.name;
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Failed to fetch Pokémon name:", error);
+    // Fallback is already set to "Pokémon #ID"
+  }
 
   return {
     imageUrl,
-    description: `You discovered Pokémon #${randomId}!`
+    description: `你發現了 ${name}!`
   };
 };
