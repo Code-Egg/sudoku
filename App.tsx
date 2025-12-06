@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Difficulty, GAME_CONFIGS, CellData, GeneratedReward } from './types';
 import { generateSudoku, checkBoard } from './services/sudoku';
 import { generateReward } from './services/geminiService';
-import { playSound } from './services/audio';
+import { playSound, setMuted } from './services/audio';
 import { Grid } from './components/Grid';
 import { Numpad } from './components/Numpad';
 import { RewardModal } from './components/RewardModal';
-import { RotateCcw, Brain } from 'lucide-react';
+import { RotateCcw, Brain, Volume2, VolumeX } from 'lucide-react';
 
 export default function App() {
   const [difficulty, setDifficulty] = useState<Difficulty>('4x4');
@@ -16,6 +16,7 @@ export default function App() {
   const [reward, setReward] = useState<GeneratedReward | null>(null);
   const [showReward, setShowReward] = useState(false);
   const [isGeneratingReward, setIsGeneratingReward] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   // Initialize Game
   const startNewGame = useCallback((diff: Difficulty = difficulty) => {
@@ -38,6 +39,13 @@ export default function App() {
     setCells(newCells);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Handle Mute Toggle
+  const toggleMute = () => {
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    setMuted(newMutedState);
+  };
 
   // Handle Cell Click
   const handleCellClick = (index: number) => {
@@ -124,6 +132,14 @@ export default function App() {
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">PokéSudoku</h1>
         </div>
+
+        <button
+          onClick={toggleMute}
+          className="p-2 rounded-full hover:bg-slate-200 text-slate-600 transition-colors"
+          aria-label={isMuted ? "Unmute sound" : "Mute sound"}
+        >
+          {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        </button>
       </header>
 
       {/* Difficulty Tabs */}

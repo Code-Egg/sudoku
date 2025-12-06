@@ -1,5 +1,10 @@
 // Simple synthesizer using Web Audio API
 let audioContext: AudioContext | null = null;
+let isMuted = false;
+
+export const setMuted = (muted: boolean) => {
+  isMuted = muted;
+};
 
 const getContext = () => {
   if (!audioContext) {
@@ -37,6 +42,7 @@ const createOscillator = (
 export const playSound = {
   // Soft tick for selecting cells
   select: () => {
+    if (isMuted) return;
     const ctx = getContext();
     if (ctx.state === 'suspended') ctx.resume();
     createOscillator('sine', 800, ctx.currentTime, 0.05, 0.05);
@@ -44,6 +50,7 @@ export const playSound = {
 
   // Clear blip for entering numbers
   input: () => {
+    if (isMuted) return;
     const ctx = getContext();
     if (ctx.state === 'suspended') ctx.resume();
     createOscillator('sine', 600, ctx.currentTime, 0.1, 0.1);
@@ -52,6 +59,7 @@ export const playSound = {
 
   // Lower tone for deleting
   delete: () => {
+    if (isMuted) return;
     const ctx = getContext();
     if (ctx.state === 'suspended') ctx.resume();
     createOscillator('sawtooth', 200, ctx.currentTime, 0.15, 0.05);
@@ -59,6 +67,7 @@ export const playSound = {
 
   // Sliding tone for restart
   restart: () => {
+    if (isMuted) return;
     const ctx = getContext();
     if (ctx.state === 'suspended') ctx.resume();
     const osc = ctx.createOscillator();
@@ -79,6 +88,7 @@ export const playSound = {
 
   // Victory jingle
   win: () => {
+    if (isMuted) return;
     const ctx = getContext();
     if (ctx.state === 'suspended') ctx.resume();
     const now = ctx.currentTime;
