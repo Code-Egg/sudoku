@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Difficulty, GAME_CONFIGS, CellData, GeneratedReward } from './types';
-import { generateSudoku, checkBoard, getCellIndex } from './services/sudoku';
+import { generateSudoku, checkBoard } from './services/sudoku';
 import { generateReward } from './services/geminiService';
 import { Grid } from './components/Grid';
 import { Numpad } from './components/Numpad';
 import { RewardModal } from './components/RewardModal';
-import { Settings, RotateCcw, Trophy, Brain } from 'lucide-react';
+import { RotateCcw, Brain } from 'lucide-react';
 
 export default function App() {
-  const [difficulty, setDifficulty] = useState<Difficulty>('EASY');
+  const [difficulty, setDifficulty] = useState<Difficulty>('4x4');
   const [cells, setCells] = useState<CellData[]>([]);
   const [selectedCellIndex, setSelectedCellIndex] = useState<number | null>(null);
   const [isGameComplete, setIsGameComplete] = useState(false);
@@ -30,7 +30,7 @@ export default function App() {
 
   // Initial load
   useEffect(() => {
-    startNewGame('EASY');
+    startNewGame('4x4');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -57,7 +57,7 @@ export default function App() {
       setShowReward(true);
       setIsGeneratingReward(true);
       
-      // Call Gemini for reward
+      // Call reward service
       const generatedReward = await generateReward();
       setReward(generatedReward);
       setIsGeneratingReward(false);
@@ -86,14 +86,11 @@ export default function App() {
         handleDelete();
       } else if (e.key === 'Escape') {
         setSelectedCellIndex(null);
-      } else {
-        // Arrow key navigation could go here
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCellIndex, cells, difficulty, isGameComplete]);
 
 
@@ -108,26 +105,23 @@ export default function App() {
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">PokéSudoku</h1>
         </div>
-        <div className="flex gap-2">
-            {/* Could add stats button here */}
-        </div>
       </header>
 
       {/* Difficulty Tabs */}
-      <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-200 mb-6 flex gap-1 w-full max-w-md mx-auto">
-        {(['EASY', 'MEDIUM', 'HARD'] as Difficulty[]).map((level) => (
+      <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-200 mb-6 flex gap-1 w-full max-w-lg mx-auto overflow-x-auto">
+        {(['4x4', '5x5', '6x6', '9x9'] as Difficulty[]).map((level) => (
           <button
             key={level}
             onClick={() => startNewGame(level)}
             className={`
-              flex-1 py-2 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap
+              flex-1 py-2 px-3 rounded-lg text-sm font-semibold transition-all whitespace-nowrap
               ${difficulty === level 
                 ? 'bg-indigo-100 text-indigo-700 shadow-sm' 
                 : 'text-slate-500 hover:bg-slate-50'
               }
             `}
           >
-            {level === 'EASY' ? 'Easy (3x3)' : level === 'MEDIUM' ? 'Med (6x6)' : 'Hard (9x9)'}
+            {level}
           </button>
         ))}
       </div>

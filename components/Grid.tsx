@@ -17,6 +17,7 @@ export const Grid: React.FC<GridProps> = ({ cells, config, selectedCellIndex, on
     let classes = 'border-slate-200 ';
     
     // Right border
+    // Only apply thick border if it's a block boundary AND not the edge of the grid
     if ((col + 1) % boxWidth === 0 && col !== size - 1) {
       classes += 'border-r-2 border-r-indigo-400 ';
     } else {
@@ -46,13 +47,15 @@ export const Grid: React.FC<GridProps> = ({ cells, config, selectedCellIndex, on
   const getFontSize = () => {
     if (size === 9) return 'text-lg sm:text-2xl md:text-3xl';
     if (size === 6) return 'text-2xl sm:text-3xl md:text-4xl';
-    return 'text-4xl sm:text-5xl';
+    if (size === 5) return 'text-3xl sm:text-4xl';
+    return 'text-3xl sm:text-4xl';
   };
 
   const getMaxWidth = () => {
     if (size === 9) return 'max-w-lg'; // Allow full width up to lg
     if (size === 6) return 'max-w-md';
-    return 'max-w-[280px] sm:max-w-xs'; // Keep 3x3 small
+    if (size === 5) return 'max-w-sm';
+    return 'max-w-xs'; // 4x4
   };
 
   return (

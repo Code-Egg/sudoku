@@ -13,8 +13,9 @@ export const Numpad: React.FC<NumpadProps> = ({ maxNumber, onNumberClick, onDele
 
   // Dynamic grid columns based on count
   const getGridClass = () => {
-    if (maxNumber <= 4) return 'grid-cols-4'; // 3 numbers + delete
-    if (maxNumber <= 7) return 'grid-cols-4'; // 6 numbers + delete (2 rows)
+    if (maxNumber <= 4) return 'grid-cols-5'; // 4 numbers + delete (1 row)
+    if (maxNumber === 5) return 'grid-cols-3'; // 2 rows (3 top, 2+del bottom)
+    if (maxNumber === 6) return 'grid-cols-4'; // 2 rows (4 top, 2+del bottom - or mixed)
     return 'grid-cols-5'; // 9 numbers + delete (2 rows)
   };
 

@@ -1,58 +1,24 @@
-import { GoogleGenAI } from "@google/genai";
 import { GeneratedReward } from '../types';
 
-const POKEMON_TYPES = [
-  'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Ghost', 'Fairy', 'Steel'
-];
+// Replace this URL with your own base URL.
+// Ensure images are named 1.jpg, 2.jpg, etc.
+// For this demo, using PokeAPI official artwork which fits the theme perfectly.
+const REWARD_IMAGE_BASE_URL = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork';
+
+// The number of images available (e.g., 151 for Gen 1 Pokemon)
+const MAX_IMAGE_ID = 151;
 
 export const generateReward = async (): Promise<GeneratedReward> => {
-  try {
-    const apiKey = process.env.API_KEY;
-    if (!apiKey) {
-      throw new Error("API Key not found");
-    }
+  // Simulate a short network delay for better UX (feeling of "unlocking")
+  await new Promise(resolve => setTimeout(resolve, 600));
 
-    const ai = new GoogleGenAI({ apiKey });
-    
-    // Pick a random type for variety
-    const randomType = POKEMON_TYPES[Math.floor(Math.random() * POKEMON_TYPES.length)];
-    const prompt = `A cute, high-quality, 3D render style image of a newly discovered ${randomType}-type Pokémon. Vibrant colors, plain background.`;
+  const randomId = Math.floor(Math.random() * MAX_IMAGE_ID) + 1;
+  
+  // Construct the URL. Note: PokeAPI uses .png, change to .jpg if your server uses jpg.
+  const imageUrl = `${REWARD_IMAGE_BASE_URL}/${randomId}.png`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image', // Fast image generation
-      contents: {
-        parts: [{ text: prompt }]
-      },
-      // No schema or mime type for image model usually needed for basic gen unless strict
-    });
-
-    let imageUrl = '';
-    
-    // Extract image
-    if (response.candidates && response.candidates[0].content.parts) {
-      for (const part of response.candidates[0].content.parts) {
-        if (part.inlineData) {
-          imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-          break;
-        }
-      }
-    }
-
-    if (!imageUrl) {
-        throw new Error("No image generated");
-    }
-
-    return {
-      imageUrl,
-      description: `A rare ${randomType}-type Pokémon appeared!`
-    };
-
-  } catch (error) {
-    console.error("Reward generation failed:", error);
-    // Fallback if API fails
-    return {
-      imageUrl: 'https://picsum.photos/400/400?blur=2',
-      description: 'A mysterious shadow...'
-    };
-  }
+  return {
+    imageUrl,
+    description: `You discovered Pokémon #${randomId}!`
+  };
 };
